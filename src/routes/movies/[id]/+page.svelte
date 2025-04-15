@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import apiClient from '$lib/plugins/interceptor';
 	import HeaderComponent from '$lib/components/Header.svelte';
 	import FooterComponent from '$lib/components/Footer.svelte';
 	import Loader from '$lib/components/Loader.svelte';
@@ -12,12 +13,48 @@
 
 	let displayedMovieName = '';
 	let movieNameIndex = 0;
+	let movieImages: any[] = [];
+	let movieVideos: any[] = [];
 
 	let pageLoaded = false;
+
+	const getMovieImages = async (movieId: string) => {
+		try {
+			const response = await apiClient.get(
+				`/movie/${movieId}/images?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.backdrops) {
+				movieImages = response.data.backdrops;
+			} else {
+				console.error('No images found for this movie.');
+			}
+		} catch (error) {
+			console.error('Error fetching movie images:', error);
+		}
+	};
+
+	const getMovieVideos = async (movieId: string) => {
+		try {
+			const response = await apiClient.get(
+				`/movie/${movieId}/videos?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.results) {
+				movieVideos = response.data.results;
+			} else {
+				console.error('No videos found for this movie.');
+			}
+		} catch (error) {
+			console.error('Error fetching movie videos:', error);
+		}
+	};
 
 	// Trigger animation after the page loads
 	onMount(() => {
 		pageLoaded = true;
+		if (movie) {
+			getMovieImages(movie.id);
+			getMovieVideos(movie.id);
+		}
 	});
 </script>
 
@@ -78,6 +115,46 @@
 			</div>
 		</div>
 	</div>
-{/if}
+
+	<!-- Container for movie images -->
+	{#if movieImages.length > 0}
+		<div class="container mx-auto my-5">
+			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Images</h2>
+			<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+				{#each movieImages as image}
+					<img
+						src={`https://image.tmdb.org/t/p/original${image.file_path}`}
+						alt={`Image from the movie ${movie.title}`}
+						class="rounded shadow"
+					/>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center my-3">No images available for this movie.</p>
+	{/if}
+
+	<!-- Container for movie videos -->
+	{#if movieVideos.length > 0}
+		<div class="container mx-auto my-5">
+			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Videos</h2>
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+				{#each movieVideos as video}
+					<iframe
+						width="100%"
+						height="315"
+						src={`https://www.youtube.com/embed/${video.key}`}
+						title={video.name}
+						frameborder="0"
+						allowfullscreen
+					></iframe>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center my-3">No videos available for this movie.</p>
+	{/if}
+{/if}		
+
 
 <FooterComponent />
