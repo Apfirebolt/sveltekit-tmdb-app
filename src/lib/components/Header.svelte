@@ -31,7 +31,7 @@
 						<a 
 							href={item.url} 
 							data-sveltekit-prefetch 
-							class="text-secondary p-3 transition-all duration-300 ease-in-out group-hover:bg-dark group-hover:text-light group-hover:scale-105"
+							class="text-secondary py-3 px-4 transition-all text-lg rounded-sm  duration-300 ease-in-out group-hover:bg-dark group-hover:text-light group-hover:scale-105"
 						>
 							{item.name}
 						</a>

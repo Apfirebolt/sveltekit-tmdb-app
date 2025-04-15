@@ -231,7 +231,7 @@
                                 <h5 class="my-4 text-center text-3xl font-bold text-white">{movie.title}</h5>
                                 <p class="mb-4 text-sm text-gray-300">{movie.overview}</p>
                                 <button
-                                    class="bg-secondary rounded px-4 py-2 font-semibold text-white hover:bg-blue-700"
+                                    class="bg-secondary rounded px-4 py-2 font-semibold text-white hover:bg-danger hover:text-light transition-colors duration-300"
                                     on:click={() => goToMovieDetails(movie)}
                                 >
                                     View Details
