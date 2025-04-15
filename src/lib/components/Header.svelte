@@ -3,7 +3,8 @@
 	let menuItems = [
 		{ name: 'Home', url: '/' },
 		{ name: 'About', url: '/about' },
-		{ name: 'Movies', url: '/movies' }
+		{ name: 'Movies', url: '/movies' },
+		{ name: 'Person', url: '/people' }
 	];
 	export let title: string = 'Svelte Kit Movies';
 	let isMenuOpen = false;

@@ -144,7 +144,7 @@
 						<div
 							class="bg-light flex items-center justify-center rounded-3xl px-2 py-3 shadow-lg md:w-full"
 						>
-							<div class="relative mx-2 w-3/4">
+							<div class="relative mx-2 md:w-3/4">
 								<input
 									type="text"
 									placeholder="Search for movies..."
