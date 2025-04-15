@@ -4,7 +4,8 @@
 		{ name: 'Home', url: '/' },
 		{ name: 'About', url: '/about' },
 		{ name: 'Movies', url: '/movies' },
-		{ name: 'Person', url: '/people' }
+		{ name: 'Person', url: '/people' },
+		{ name: 'TV Shows', url: '/shows' }
 	];
 	export let title: string = 'Svelte Kit Movies';
 	let isMenuOpen = false;
