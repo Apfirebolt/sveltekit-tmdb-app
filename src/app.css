@@ -5,12 +5,13 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
-    --color-midnight: #121063;
-    --color-tahiti: #3ab7bf;
-    --color-bermuda: #78dcca;
-    --color-accent: #ECDCBF;
-    --color-accent-dark: #B9B28A;
-    --color-accent-light: #f9f871;
+    --color-primary: #D84040;
+    --color-secondary: #27445D;
+    --color-tertiary: #78dcca;
+    --color-accent: #B1F0F7;
+    --color-light: #F5EFE7;
+    --color-dark: #09122C;
+    --color-danger: #ff4c4c;
   }
 
 body {

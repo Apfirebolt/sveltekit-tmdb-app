@@ -14,7 +14,7 @@
 	}
 </script>
 
-<header class="bg-midnight text-white">
+<header class="bg-primary text-light">
 	<div class="container mx-auto flex items-center justify-between px-6 py-4">
 		<h1 class="text-3xl font-bold">{title}</h1>
 		<button
