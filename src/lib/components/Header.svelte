@@ -14,7 +14,7 @@
 	}
 </script>
 
-<header class="bg-primary text-light">
+<header class="bg-light text-dark shadow-lg fixed top-0 left-0 w-full z-50">
 	<div class="container mx-auto flex items-center justify-between px-6 py-4">
 		<h1 class="text-3xl font-bold">{title}</h1>
 		<button
@@ -31,7 +31,7 @@
 						<a 
 							href={item.url} 
 							data-sveltekit-prefetch 
-							class="text-white px-3 py-2 rounded transition-all duration-300 ease-in-out group-hover:bg-bermuda group-hover:text-black group-hover:scale-105"
+							class="text-secondary p-3 transition-all duration-300 ease-in-out group-hover:bg-dark group-hover:text-light group-hover:scale-105"
 						>
 							{item.name}
 						</a>
@@ -43,13 +43,13 @@
 
 	<!-- Mobile Menu -->
 	<div
-		class="fixed top-0 right-0 bg-midnight text-white z-40 h-full w-1/2 transform transition-transform duration-300 ease-in-out"
+		class="fixed top-0 right-0 bg-secondary text-light z-40 h-full w-1/2 transform transition-transform duration-300 ease-in-out"
 		class:translate-x-0={isMenuOpen}
 		class:translate-x-full={!isMenuOpen}
 	>
 		<div class="flex justify-end p-4">
 			<button
-				class="text-white focus:outline-none"
+				class="text-secondary focus:outline-none"
 				on:click={toggleMenu}
 				aria-label="Close menu"
 			>

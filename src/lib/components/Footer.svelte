@@ -8,16 +8,16 @@
 	];
 </script>
 
-<footer class="bg-primary text-light py-6 border-t border-gray-700">
+<footer class="bg-light text-dark py-6 border-t border-secondary">
     <div class="container mx-auto text-center space-y-4">
         <nav class="flex justify-center space-x-6">
             {#each menuItems as item}
-                <a href={item.url} class="text-sm hover:underline">
+                <a href={item.url} class="hover:underline">
                     {item.name}
                 </a>
             {/each}
         </nav>
-        <p class="text-sm">
+        <p>
             &copy; {year} Sveltekit Movies. All rights reserved.
         </p>
     </div>

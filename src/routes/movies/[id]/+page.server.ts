@@ -1,21 +1,21 @@
 // src/routes/movies/[id]/+page.server.ts
 
 import type { PageServerLoad } from './$types';
-import type { Movie } from '$lib/types/Movie';
+import type { DetailedMovie } from '$lib/types/Movie';
+import apiClient from '$lib/plugins/interceptor';
 
 
 export const load: PageServerLoad = async ({ params }) => {
     const { id } = params;
 
     try {
-        const response = await fetch(`https://softgenie.org/api/movies/${id}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const movie: Movie = await response.json();
-        return { movie }; // Return movie details to the page
+        const response = await apiClient.get(`movie/${id}?api_key=${import.meta.env.VITE_APP_KEY}`);
+        const movie: DetailedMovie = response.data;
+        return {
+            movie,
+        };
     } catch (error) {
-        console.error('API Error:', error);
-        return { movie: null }; // Handle errors gracefully
+        console.error('Error fetching movie details:', error);
+        throw error; // Rethrow the error to handle it in the route
     }
 };

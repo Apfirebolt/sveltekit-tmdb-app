@@ -12,6 +12,14 @@
 
 	let searchQuery: string = '';
 	let currentPage: number = 1;
+	let showMovies: boolean = false; // Control when to show movies
+
+	$: if (!loading && !error && movies.length > 0) {
+		// Set showMovies to true once data is loaded
+		showMovies = true;
+	} else {
+		showMovies = false; // Hide movies if loading or error occurs
+	}
 
 	function goToNextPage() {
 		// increment the current page
@@ -28,7 +36,7 @@
 	}
 
 	const goToMovieDetails = (movie: Movie) => {
-		goto(`/movies/${movie.ID}`);
+		goto(`/movies/${movie.id}`);
 	};
 
 	let text = 'Welcome to TMDB Movies App';
@@ -71,20 +79,22 @@
 {:else}
 	<div class="bg-accent text-dark">
 		<section
-			class="relative h-[500px] bg-cover bg-center"
+			class="relative h-[500px] bg-cover w-full bg-center"
 			style="background-image: url('https://img10.hotstar.com/image/upload/f_auto/sources/r1/cms/prod/5313/1734078555313-i');"
 		>
 			<div
 				class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-gradient-to-b from-black via-transparent to-black"
 			>
-				<div class="text-center text-light">
-					<h1 class="mb-4 text-4xl font-bold md:text-6xl">
+				<div class="text-light w-3/5 text-center">
+					<h1 class="mb-4 text-4xl font-bold md:text-6xl" in:fly={{ y: 50, duration: 500 }}>
 						{displayedText}
 					</h1>
 					<p class="mb-6 text-lg md:text-xl">Discover your favorite movies and more</p>
 					<div class="mx-auto flex justify-center">
-						<div class="flex items-center">
-							<div class="relative mx-2 w-full">
+						<div
+							class="bg-light flex items-center justify-center rounded-3xl px-2 py-3 shadow-lg md:w-full"
+						>
+							<div class="relative mx-2 w-3/4">
 								<input
 									type="text"
 									placeholder="Search for movies..."
@@ -93,11 +103,11 @@
 								/>
 								<Icon
 									icon="mdi:magnify"
-									class="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-2xl"
+									class="text-secondary absolute top-1/2 left-3 -translate-y-1/2 transform text-xl"
 								/>
 							</div>
 							<button
-								class="bg-secondary rounded-lg px-6 py-3 font-semibold text-light hover:bg-blue-700 flex items-center"
+								class="bg-secondary text-light flex items-center text-sm rounded-lg px-6 py-3 font-semibold hover:bg-blue-700"
 								on:click={() => searchMovie()}
 							>
 								<Icon icon="mdi:magnify" class="mr-2 text-lg" />
@@ -109,49 +119,56 @@
 			</div>
 		</section>
 		<div class="container mx-auto py-2">
-			<div class="mt-4 mb-3 flex justify-center">
-				<button
-					class="bg-secondary hover:bg-secondary flex items-center rounded px-4 py-2 text-white disabled:opacity-50"
-					on:click={goToPreviousPage}
-					disabled={currentPage === 1}
-				>
-					<Icon icon="mdi:arrow-left" class="mr-2" />
-					Previous
-				</button>
-				<button
-					class="bg-secondary hover:bg-secondary mx-2 flex items-center rounded px-4 py-2 text-white disabled:opacity-50"
-					on:click={goToNextPage}
-				>
-					Next
-					<Icon icon="mdi:arrow-right" class="ml-2" />
-				</button>
-			</div>
-			<div class="columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3">
-				{#each movies as movie (movie.id)}
-					<div class="break-inside-avoid overflow-hidden rounded-lg bg-dark shadow-lg">
-						{#if movie.poster_path}
-							<img
-								src={'https://image.tmdb.org/t/p/w500' + movie.poster_path}
-								class="h-auto w-full"
-								alt={movie.title}
-							/>
-						{:else}
-							<div class="flex items-center justify-center h-64 bg-gray-800 text-white font-bold">
-								No image is available
+			{#if movies.length > 0}
+				<div class="mt-4 mb-3 flex justify-center">
+					<button
+						class="bg-secondary hover:bg-secondary flex items-center rounded px-4 py-2 text-white disabled:opacity-50"
+						on:click={goToPreviousPage}
+						disabled={currentPage === 1}
+					>
+						<Icon icon="mdi:arrow-left" class="mr-2" />
+						Previous
+					</button>
+					<button
+						class="bg-secondary hover:bg-secondary mx-2 flex items-center rounded px-4 py-2 text-white disabled:opacity-50"
+						on:click={goToNextPage}
+					>
+						Next
+						<Icon icon="mdi:arrow-right" class="ml-2" />
+					</button>
+				</div>
+			{/if}
+			<div
+				class="columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3"
+				in:fly={{ y: 50, duration: 500 }}
+			>
+				{#if showMovies}
+					{#each movies as movie (movie.id)}
+						<div class="bg-dark break-inside-avoid overflow-hidden rounded-lg shadow-lg">
+							{#if movie.poster_path}
+								<img
+									src={'https://image.tmdb.org/t/p/w500' + movie.poster_path}
+									class="h-auto w-full"
+									alt={movie.title}
+								/>
+							{:else}
+								<div class="flex h-64 items-center justify-center bg-gray-800 font-bold text-white">
+									No image is available
+								</div>
+							{/if}
+							<div class="p-4">
+								<h5 class="my-4 text-center text-3xl font-bold text-white">{movie.title}</h5>
+								<p class="mb-4 text-sm text-gray-300">{movie.overview}</p>
+								<button
+									class="bg-secondary rounded px-4 py-2 font-semibold text-white hover:bg-blue-700"
+									on:click={() => goToMovieDetails(movie)}
+								>
+									View Details
+								</button>
 							</div>
-						{/if}
-						<div class="p-4">
-							<h5 class="my-4 text-3xl text-center font-bold text-white">{movie.title}</h5>
-							<p class="mb-4 text-sm text-gray-300">{movie.overview}</p>
-							<button
-								class="bg-secondary rounded px-4 py-2 font-semibold text-white hover:bg-blue-700"
-								on:click={() => goToMovieDetails(movie)}
-							>
-								View Details
-							</button>
 						</div>
-					</div>
-				{/each}
+					{/each}
+				{/if}
 			</div>
 		</div>
 	</div>
