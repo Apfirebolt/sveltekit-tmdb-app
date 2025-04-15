@@ -53,3 +53,58 @@ export interface DetailedPerson {
     popularity: number;
     profile_path: string | null;
 }
+
+export interface ImageResponse {
+    id: number;
+    profiles: Image[];
+}
+
+export interface Image {
+    aspect_ratio: number;
+    height: number;
+    iso_639_1: string | null;
+    file_path: string;
+    vote_average: number;
+    vote_count: number;
+    width: number;
+}
+
+export interface TaggedImageResponse {
+    id: number;
+    page: number;
+    results: MediaImage[];
+    total_pages: number;
+    total_results: number;
+}
+
+export interface TaggedImage {
+    aspect_ratio: number;
+    file_path: string;
+    height: number;
+    id: string;
+    iso_639_1: string | null;
+    vote_average: number;
+    vote_count: number;
+    width: number;
+    image_type: string;
+    media: MediaDetails;
+    media_type: string;
+}
+
+export interface MediaDetails {
+    backdrop_path: string | null;
+    id: number;
+    title?: string;
+    original_title?: string;
+    overview: string;
+    poster_path: string | null;
+    media_type: 'movie' | 'tv';
+    adult: boolean;
+    original_language: string;
+    genre_ids: number[];
+    popularity: number;
+    release_date?: string;
+    video?: boolean;
+    vote_average: number;
+    vote_count: number;
+}
