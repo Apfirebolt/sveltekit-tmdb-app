@@ -17,6 +17,7 @@
 	let pageLoaded = false;
 	let personImages: Image[] = [];
 	let taggedImages: TaggedImage[] = [];
+	let combinedCredits: Image[] = [];
 
 	const getPersonImages = async (personId: string) => {
 		try {
@@ -48,12 +49,28 @@
 		}
 	};
 
+	const getCombinedCredits = async (personId: string) => {
+		try {
+			const response = await apiClient.get(
+				`/person/${personId}/combined_credits?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.cast) {
+				combinedCredits = response.data.cast;
+			} else {
+				console.error('No images found for this person.');
+			}
+		} catch (error) {
+			console.error('Error fetching person images:', error);
+		}
+	};
+
 	// Trigger animation and fetch images after the page loads
 	onMount(() => {
 		pageLoaded = true;
 		if (person) {
 			getPersonImages(person.id);
 			getTaggedImages(person.id);
+			getCombinedCredits(person.id);
 		}
 	});
 </script>
@@ -125,8 +142,8 @@
 		<!-- Display Tagged Images -->
 		{#if taggedImages.length > 0}
 			<div>
-				<h2 class="mb-2 text-3xl font-semibold">Tagged Images</h2>
-				<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Tagged Images</h2>
+				<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
 					{#each taggedImages as image}
 						<img
 							src={`https://image.tmdb.org/t/p/w500${image.file_path}`}
@@ -138,6 +155,37 @@
 			</div>
 		{:else}
 			<p class="mt-8 text-gray-500">No tagged images available.</p>
+		{/if}
+
+		<!-- Display Combined Credits -->
+		{#if combinedCredits.length > 0}
+			<div>
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Combined Credits</h2>
+				<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
+					{#each combinedCredits as credit}
+						<div class="relative group">
+							<img
+								src={`https://image.tmdb.org/t/p/w500${credit.poster_path}`}
+								alt=""
+								class="rounded shadow"
+							/>
+							<div
+								class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+							>
+								<p class="text-white text-lg font-bold mb-2">{credit.original_title}</p>
+								<a
+									href={`/movies/${credit.id}`}
+									class="text-primary bg-light px-4 py-2 rounded hover:bg-primary hover:text-light transition-colors"
+								>
+									View Details
+								</a>
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<p class="mt-8 text-gray-500">No combined credits available.</p>
 		{/if}
 	</div>
 {/if}
