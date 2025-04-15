@@ -3,7 +3,7 @@
     import HeaderComponent from '$lib/components/Header.svelte';
     import FooterComponent from '$lib/components/Footer.svelte';
 
-    let text = "Welcome to Svelte Movies";
+    let text = "Welcome to TMDB Movies App";
     let displayedText = "";
     let index = 0;
 
@@ -22,18 +22,19 @@
 
 <HeaderComponent />
 
-<section class="relative bg-cover bg-center h-[500px]" style="background-image: url('https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+<section class="relative bg-cover bg-center h-[500px]" style="background-image: url('https://atthemovies.uk/cdn/shop/products/GoodWillHunting1997us27x40in175.jpg?v=1621383309');">
     <div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black bg-opacity-50 flex items-center justify-center">
-        <div class="text-center text-white">
+        <div class="text-center text-white bg-opacity-50 p-6 rounded-lg">
             <h1 class="text-4xl md:text-6xl font-bold mb-4" in:fly={{ y: 50, duration: 500 }}>
                 {displayedText}
             </h1>
             <p class="text-lg md:text-xl mb-6" in:fly={{ y: 50, duration: 500, delay: 200 }}>
-                Discover your favorite movies and more
+                Discover your favorite movies and more. This is a simple Svelte app that allows you to explore movies, shows, and people in the entertainment industry.
+                Data is fetched from The Movie Database (TMDB) API.
             </p>
-            <button class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg" in:fly={{ y: 50, duration: 500, delay: 400 }}>
-                Get Started
-            </button>
+            <p>
+                Please find the API key in the <a href="https://www.themoviedb.org/documentation/api" class="text-light hover:text-danger">TMDB API documentation</a>.
+            </p>
         </div>
     </div>
 </section>

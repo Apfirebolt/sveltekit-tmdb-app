@@ -3,7 +3,6 @@
 	let menuItems = [
 		{ name: 'Home', url: '/' },
 		{ name: 'About', url: '/about' },
-		{ name: 'Contact', url: '/contact' },
 		{ name: 'Movies', url: '/movies' }
 	];
 </script>

@@ -3,7 +3,6 @@
 	let menuItems = [
 		{ name: 'Home', url: '/' },
 		{ name: 'About', url: '/about' },
-		{ name: 'Contact', url: '/contact' },
 		{ name: 'Movies', url: '/movies' }
 	];
 	export let title: string = 'Svelte Kit Movies';
@@ -18,7 +17,7 @@
 	<div class="container mx-auto flex items-center justify-between px-6 py-4">
 		<h1 class="text-3xl font-bold">{title}</h1>
 		<button
-			class="lg:hidden text-white focus:outline-none"
+			class="lg:hidden text-dark focus:outline-none"
 			on:click={toggleMenu}
 			aria-label="Toggle menu"
 		>
@@ -49,7 +48,7 @@
 	>
 		<div class="flex justify-end p-4">
 			<button
-				class="text-secondary focus:outline-none"
+				class="text-light focus:outline-none"
 				on:click={toggleMenu}
 				aria-label="Close menu"
 			>
@@ -58,7 +57,7 @@
 		</div>
 		<ul class="space-y-4 px-6">
 			{#each menuItems as item}
-				<li class="bg-bermuda text-white px-2 py-3 text-center shadow-xl rounded hover:bg-amber-500 transition-colors duration-300">
+				<li class="bg-bermuda text-white px-2 py-3 text-center shadow-xl rounded hover:bg-danger transition-colors duration-300">
 					<a href={item.url} data-sveltekit-prefetch on:click={toggleMenu}>
 						{item.name}
 					</a>

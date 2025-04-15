@@ -6,6 +6,9 @@ import type { Movie, MovieResponse } from '$lib/types/movie';
 function createMovieStore() {
     const { subscribe, set, update } = writable({
         movies: [] as Movie[],
+        totalPages: 0,
+        totalResults: 0,
+        page: 0,
         loading: false as boolean,
         error: null,
     });
@@ -17,6 +20,9 @@ function createMovieStore() {
             update((state) => ({
                 ...state,
                 movies: response.data.results, // Assuming `results` contains the list of movies
+                totalPages: response.data.total_pages,
+                totalResults: response.data.total_results,
+                page: response.data.page,
                 loading: false,
             }));
         } catch (error: unknown) {
