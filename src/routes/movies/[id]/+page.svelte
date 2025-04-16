@@ -15,6 +15,10 @@
 	let movieNameIndex = 0;
 	let movieImages: any[] = [];
 	let movieVideos: any[] = [];
+	let movieRecommendations: any[] = [];
+	let movieReviews: any[] = [];
+	let movieCast: any[] = [];
+	let movieCrew: any[] = [];
 
 	let pageLoaded = false;
 
@@ -48,12 +52,84 @@
 		}
 	};
 
+	const getMovieRecommendations = async (movieId: string) => {
+		try {
+			const response = await apiClient.get(
+				`/movie/${movieId}/recommendations?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.results) {
+				movieRecommendations = response.data.results;
+			} else {
+				console.error('No recommendations found for this movie.');
+			}
+		} catch (error) {
+			console.error('Error fetching movie recommendations:', error);
+		}
+	};
+
+	const getMovieReviews = async (movieId: string) => {
+		try {
+			const response = await apiClient.get(
+				`/movie/${movieId}/reviews?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.results) {
+				movieReviews = response.data.results;
+			} else {
+				console.error('No reviews found for this movie.');
+			}
+		} catch (error) {
+			console.error('Error fetching movie reviews:', error);
+		}
+	};
+
+	const getMovieCast = async (movieId: string) => {
+		try {
+			const response = await apiClient.get(
+				`/movie/${movieId}/credits?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.cast) {
+				movieCast = response.data.cast;
+			} else {
+				console.error('No cast found for this movie.');
+			}
+		} catch (error) {
+			console.error('Error fetching movie cast:', error);
+		}
+	};
+
+	const getMovieCrew = async (movieId: string) => {
+		try {
+			const response = await apiClient.get(
+				`/movie/${movieId}/credits?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.crew) {
+				movieCrew = response.data.crew;
+			} else {
+				console.error('No crew found for this movie.');
+			}
+		} catch (error) {
+			console.error('Error fetching movie crew:', error);
+		}
+	};
+
+	// Function to display movie name with animation
+	const displayMovieName = () => {
+		if (movie && movie.title) {
+			displayedMovieName = movie.title[movieNameIndex];
+			movieNameIndex = (movieNameIndex + 1) % movie.title.length;
+		}
+	};
+
 	// Trigger animation after the page loads
 	onMount(() => {
 		pageLoaded = true;
 		if (movie) {
 			getMovieImages(movie.id);
 			getMovieVideos(movie.id);
+			getMovieRecommendations(movie.id);
+			getMovieReviews(movie.id);
+			getMovieCast(movie.id);
+			getMovieCrew(movie.id);
 		}
 	});
 </script>
@@ -154,6 +230,93 @@
 	{:else}
 		<p class="text-center my-3">No videos available for this movie.</p>
 	{/if}
+
+	<!-- Movie Cast -->
+	{#if movieCast.length > 0}
+		<div class="container mx-auto my-5">
+			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Cast</h2>
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+				{#each movieCast as cast}
+					<div class="p-4 bg-light rounded shadow">
+						<img
+							src={`https://image.tmdb.org/t/p/original${cast.profile_path}`}
+							alt={cast.name}
+							class="rounded shadow mb-2"
+						/>
+						<h3 class="text-lg font-semibold">{cast.name}</h3>
+						<p>{cast.character}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center my-3">No cast information available for this movie.</p>
+	{/if}
+
+	<!-- Movie Crew -->
+	{#if movieCrew.length > 0}
+		<div class="container mx-auto my-5">
+			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Crew</h2>
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+				{#each movieCrew as crew}
+					<div class="p-4 bg-light rounded shadow">
+						{#if crew.profile_path}
+							<img
+								src={`https://image.tmdb.org/t/p/original${crew.profile_path}`}
+								alt={crew.name}
+								class="rounded shadow mb-2"
+							/>
+						{:else}
+							<p class="text-center my-3 text-secondary">Image not available</p>
+						{/if}
+						<h3 class="text-lg font-semibold">{crew.name}</h3>
+						<p>{crew.job}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center my-3">No crew information available for this movie.</p>
+	{/if}
+
+	<!-- Movie Reviews -->
+	{#if movieReviews.length > 0}
+		<div class="container mx-auto my-5">
+			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Reviews</h2>
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+				{#each movieReviews as review}
+					<div class="p-4 bg-light rounded shadow">
+						<h3 class="text-lg font-semibold my-3 text-center">{review.author}</h3>
+						<p>{review.content}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center my-3">No reviews available for this movie.</p>
+	{/if}
+
+	<!-- Movie Recommendations -->
+	{#if movieRecommendations.length > 0}
+		<div class="container mx-auto my-5">
+			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Recommendations</h2>
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+				{#each movieRecommendations as recommendation}
+					<div class="p-4 bg-light rounded shadow">
+						<img
+							src={`https://image.tmdb.org/t/p/original${recommendation.poster_path}`}
+							alt={recommendation.title}
+							class="rounded shadow mb-2"
+						/>
+						<h3 class="text-xl font-semibold text-secondary mt-2 text-center">{recommendation.title}</h3>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center my-3">No recommendations available for this movie.</p>
+	{/if}
+
 {/if}		
 
 
