@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fly } from 'svelte/transition';
 	import apiClient from '$lib/plugins/interceptor';
@@ -111,6 +112,12 @@
 			showSuggestions = false;
 		}, 100);
 	};
+
+	// Fetch popular people on component mount
+	onMount(() => {
+		peopleStore.getPopularPeople(currentPage);
+	});
+
 </script>
 
 <svelte:head>
