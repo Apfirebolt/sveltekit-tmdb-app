@@ -20,6 +20,18 @@
 	let movieReviews: any[] = [];
 	let movieCast: any[] = [];
 	let movieCrew: any[] = [];
+	let tabs = [
+		{ name: 'images', label: 'Images', selected: true },
+		{ name: 'videos', label: 'Videos', selected: false },
+		{ name: 'recommendations', label: 'Recommendations', selected: false },
+		{ name: 'reviews', label: 'Reviews', selected: false },
+		{ name: 'cast', label: 'Cast', selected: false },
+		{ name: 'crew', label: 'Crew', selected: false }
+	];
+	let selectedTab = 'images';
+	const selectTab = (tab: string) => {
+		selectedTab = tab;
+	};
 
 	let pageLoaded = false;
 
@@ -193,123 +205,151 @@
 		</div>
 	</div>
 
-	<!-- Container for movie images -->
-	{#if movieImages.length > 0}
-		<div class="container mx-auto my-5">
-			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Images</h2>
-			<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-				{#each movieImages as image}
-					<img
-						src={`https://image.tmdb.org/t/p/original${image.file_path}`}
-						alt={`Image from the movie ${movie.title}`}
-						class="rounded shadow"
-					/>
-				{/each}
-			</div>
+	<!-- Tabs here -->
+	<div class="mt-8 p-4 shadow-xl">
+		<div class="flex justify-center space-x-4">
+			{#each tabs as tab}
+				<button
+					class={[
+						'px-4 py-2 font-semibold border-2 border-dark rounded hover:bg-primary hover:text-light transition-colors',
+						selectedTab === tab.name ? 'bg-secondary text-white' : ''
+					].join(' ')}
+					on:click={() => selectTab(tab.name)}
+				>
+					{tab.label}
+				</button>
+			{/each}
 		</div>
-	{:else}
-		<p class="text-center my-3">No images available for this movie.</p>
+	</div>
+
+	<!-- Conditional rendering based on selected tab -->
+	{#if selectedTab === 'images'}
+		<!-- Container for movie images -->
+		{#if movieImages.length > 0}
+			<div class="container mx-auto my-5">
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Images</h2>
+				<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+					{#each movieImages as image}
+						<img
+							src={`https://image.tmdb.org/t/p/original${image.file_path}`}
+							alt={`Image from the movie ${movie.title}`}
+							class="rounded shadow-xl h-96"
+						/>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<p class="text-center my-3">No images available for this movie.</p>
+		{/if}
 	{/if}
 
-	<!-- Container for movie videos -->
-	{#if movieVideos.length > 0}
-		<div class="container mx-auto my-5">
-			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Videos</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-				{#each movieVideos as video}
-					<iframe
-						width="100%"
-						height="315"
-						src={`https://www.youtube.com/embed/${video.key}`}
-						title={video.name}
-						frameborder="0"
-						allowfullscreen
-					></iframe>
-				{/each}
+	{#if selectedTab === 'videos'}
+		<!-- Container for movie videos -->
+		{#if movieVideos.length > 0}
+			<div class="container mx-auto my-5">
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Videos</h2>
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+					{#each movieVideos as video}
+						<iframe
+							width="100%"
+							height="315"
+							src={`https://www.youtube.com/embed/${video.key}`}
+							title={video.name}
+							frameborder="0"
+							allowfullscreen
+						></iframe>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center my-3">No videos available for this movie.</p>
+		{:else}
+			<p class="text-center my-3">No videos available for this movie.</p>
+		{/if}
 	{/if}
 
-	<!-- Movie Cast -->
-	{#if movieCast.length > 0}
-		<div class="container mx-auto my-5">
-			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Cast</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-				{#each movieCast as cast}
-					<PersonCardView
-						cast={cast}
-					/>
-				{/each}
+	{#if selectedTab === 'cast'}
+		<!-- Movie Cast -->
+		{#if movieCast.length > 0}
+			<div class="container mx-auto my-5">
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Cast</h2>
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					{#each movieCast as cast}
+						<PersonCardView cast={cast} />
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center my-3">No cast information available for this movie.</p>
+		{:else}
+			<p class="text-center my-3">No cast information available for this movie.</p>
+		{/if}
 	{/if}
 
-	<!-- Movie Crew -->
-	{#if movieCrew.length > 0}
-		<div class="container mx-auto my-5">
-			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Crew</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-				{#each movieCrew as crew}
-					<div class="p-4 bg-light rounded shadow">
-						{#if crew.profile_path}
+	{#if selectedTab === 'crew'}
+		<!-- Movie Crew -->
+		{#if movieCrew.length > 0}
+			<div class="container mx-auto my-5">
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Crew</h2>
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					{#each movieCrew as crew}
+						<div class="p-4 bg-light rounded shadow">
+							{#if crew.profile_path}
+								<img
+									src={`https://image.tmdb.org/t/p/original${crew.profile_path}`}
+									alt={crew.name}
+									class="rounded shadow mb-2"
+								/>
+							{:else}
+								<p class="text-center my-3 text-secondary">Image not available</p>
+							{/if}
+							<h3 class="text-lg font-semibold">{crew.name}</h3>
+							<p>{crew.job}</p>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<p class="text-center my-3">No crew information available for this movie.</p>
+		{/if}
+	{/if}
+
+	{#if selectedTab === 'reviews'}
+		<!-- Movie Reviews -->
+		{#if movieReviews.length > 0}
+			<div class="container mx-auto my-5">
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Reviews</h2>
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					{#each movieReviews as review}
+						<div class="p-4 bg-light rounded shadow">
+							<h3 class="text-lg font-semibold my-3 text-center">{review.author}</h3>
+							<p>{review.content}</p>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<p class="text-center my-3">No reviews available for this movie.</p>
+		{/if}
+	{/if}
+
+	{#if selectedTab === 'recommendations'}
+		<!-- Movie Recommendations -->
+		{#if movieRecommendations.length > 0}
+			<div class="container mx-auto my-5">
+				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Recommendations</h2>
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					{#each movieRecommendations as recommendation}
+						<div class="p-4 bg-light rounded shadow">
 							<img
-								src={`https://image.tmdb.org/t/p/original${crew.profile_path}`}
-								alt={crew.name}
+								src={`https://image.tmdb.org/t/p/original${recommendation.poster_path}`}
+								alt={recommendation.title}
 								class="rounded shadow mb-2"
 							/>
-						{:else}
-							<p class="text-center my-3 text-secondary">Image not available</p>
-						{/if}
-						<h3 class="text-lg font-semibold">{crew.name}</h3>
-						<p>{crew.job}</p>
-					</div>
-				{/each}
+							<h3 class="text-xl font-semibold text-secondary mt-2 text-center">{recommendation.title}</h3>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center my-3">No crew information available for this movie.</p>
-	{/if}
-
-	<!-- Movie Reviews -->
-	{#if movieReviews.length > 0}
-		<div class="container mx-auto my-5">
-			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Reviews</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-				{#each movieReviews as review}
-					<div class="p-4 bg-light rounded shadow">
-						<h3 class="text-lg font-semibold my-3 text-center">{review.author}</h3>
-						<p>{review.content}</p>
-					</div>
-				{/each}
-			</div>
-		</div>
-	{:else}
-		<p class="text-center my-3">No reviews available for this movie.</p>
-	{/if}
-
-	<!-- Movie Recommendations -->
-	{#if movieRecommendations.length > 0}
-		<div class="container mx-auto my-5">
-			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Recommendations</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-				{#each movieRecommendations as recommendation}
-					<div class="p-4 bg-light rounded shadow">
-						<img
-							src={`https://image.tmdb.org/t/p/original${recommendation.poster_path}`}
-							alt={recommendation.title}
-							class="rounded shadow mb-2"
-						/>
-						<h3 class="text-xl font-semibold text-secondary mt-2 text-center">{recommendation.title}</h3>
-					</div>
-				{/each}
-			</div>
-		</div>
-	{:else}
-		<p class="text-center my-3">No recommendations available for this movie.</p>
+		{:else}
+			<p class="text-center my-3">No recommendations available for this movie.</p>
+		{/if}
 	{/if}
 
 {/if}		
