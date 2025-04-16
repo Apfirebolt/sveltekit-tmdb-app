@@ -4,6 +4,7 @@
 	import apiClient from '$lib/plugins/interceptor';
 	import HeaderComponent from '$lib/components/Header.svelte';
 	import FooterComponent from '$lib/components/Footer.svelte';
+	import PersonCardView from '$lib/components/PersonCardView.svelte';
 	import Loader from '$lib/components/Loader.svelte';
 	import type { DetailedMovie } from '$lib/types/Movie.ts'; // Import as a type
 
@@ -237,15 +238,9 @@
 			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Cast</h2>
 			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 				{#each movieCast as cast}
-					<div class="p-4 bg-light rounded shadow">
-						<img
-							src={`https://image.tmdb.org/t/p/original${cast.profile_path}`}
-							alt={cast.name}
-							class="rounded shadow mb-2"
-						/>
-						<h3 class="text-lg font-semibold">{cast.name}</h3>
-						<p>{cast.character}</p>
-					</div>
+					<PersonCardView
+						cast={cast}
+					/>
 				{/each}
 			</div>
 		</div>

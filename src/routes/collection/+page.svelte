@@ -26,6 +26,13 @@
 	let displayedText = '';
 	let index = 0;
 
+	$: if (!loading && !error && collections.length > 0) {
+		// Set showMovies to true once data is loaded
+		showCollections = true;
+	} else {
+		showCollections = false; // Hide movies if loading or error occurs
+	}
+
 	// Typewriter effect logic
 	const typeWriter = () => {
 		if (index < text.length) {
@@ -50,6 +57,49 @@
 
 	// Start the typewriter effect when the component is mounted
 	typeWriter();
+
+	const getTypeAheadSuggestions = async () => {
+		if (searchQuery.trim() !== '') {
+			isFetchingSuggestions = true;
+			try {
+				const response = await apiClient.get(
+					`/search/collection?query=${encodeURIComponent(searchQuery)}&page=1&api_key=${import.meta.env.VITE_APP_KEY}`
+				);
+				typeAheadSuggestions = response.data.results.map((collection: Result) => collection.name);
+				showSuggestions = typeAheadSuggestions.length > 0;
+			} catch (error) {
+				console.error('Error fetching typeahead suggestions:', error);
+				typeAheadSuggestions = [];
+				showSuggestions = false;
+			} finally {
+				isFetchingSuggestions = false;
+			}
+		} else {
+			typeAheadSuggestions = [];
+			showSuggestions = false;
+		}
+	};
+
+	const handleInputChange = () => {
+		showSuggestions = false; // Hide suggestions on new input
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+		debounceTimer = setTimeout(getTypeAheadSuggestions, DEBOUNCE_DELAY);
+	};
+
+	const selectSuggestion = (suggestion: string) => {
+		searchQuery = suggestion;
+		searchCollection();
+		showSuggestions = false;
+	};
+
+	const handleBlur = () => {
+		// Slight delay to allow click on suggestion to register
+		setTimeout(() => {
+			showSuggestions = false;
+		}, 100);
+	};
 
 	const searchCollection = () => {
 		if (searchQuery.trim() !== '') {
@@ -96,12 +146,34 @@
 									type="text"
 									placeholder="Search for collection..."
 									bind:value={searchQuery}
+									on:input={handleInputChange}
+									on:blur={handleBlur}
 									class="text-secondary w-full rounded-lg border border-gray-300 px-4 py-2 pl-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 								/>
 								<Icon
 									icon="mdi:magnify"
 									class="text-secondary absolute top-1/2 left-3 -translate-y-1/2 transform text-xl"
 								/>
+								{#if showSuggestions && typeAheadSuggestions.length > 0}
+									<ul class="bg-light absolute right-0 left-0 z-10 mt-1 rounded-md shadow-lg">
+										{#each typeAheadSuggestions as suggestion}
+											<button
+												type="button"
+												class="text-secondary w-full cursor-pointer px-4 py-2 text-left hover:bg-gray-100"
+												on:click={() => selectSuggestion(suggestion)}
+											>
+												{suggestion}
+											</button>
+										{/each}
+									</ul>
+								{/if}
+								{#if isFetchingSuggestions && searchQuery.trim() !== ''}
+									<div
+										class="bg-light absolute right-0 left-0 z-10 mt-1 rounded-md px-4 py-2 text-gray-500"
+									>
+										Loading suggestions...
+									</div>
+								{/if}
 							</div>
 							<button
 								class="bg-secondary text-light flex items-center rounded-lg px-6 py-3 text-sm font-semibold hover:bg-blue-700"

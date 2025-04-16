@@ -6,6 +6,7 @@
 	import { movieStore } from '$lib/stores/movie';
 	import HeaderComponent from '$lib/components/Header.svelte';
 	import FooterComponent from '$lib/components/Footer.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
 	import Loader from '$lib/components/Loader.svelte';
 	import Icon from '@iconify/svelte';
 
@@ -31,7 +32,11 @@
 	function goToNextPage() {
 		// increment the current page
 		currentPage += 1;
-		movieStore.searchMovies(searchQuery, currentPage);
+		if (searchQuery.trim() === '') {
+			movieStore.getPopularMovies(currentPage);
+		} else {
+			movieStore.searchMovies(searchQuery, currentPage);
+		}
 	}
 
 	function goToPreviousPage() {
@@ -39,7 +44,11 @@
 		if (currentPage < 1) {
 			currentPage = 1; // Prevent going below page 1
 		}
-		movieStore.searchMovies(searchQuery, currentPage);
+		if (searchQuery.trim() === '') {
+			movieStore.getPopularMovies(currentPage);
+		} else {
+			movieStore.searchMovies(searchQuery, currentPage);
+		}
 	}
 
 	const goToMovieDetails = (movie: Movie) => {
@@ -199,29 +208,15 @@
 		</section>
 		<div class="container mx-auto py-2">
 			{#if movies.length > 0}
-				<div class="mt-4 mb-3 flex items-center justify-center">
-					<p class="text-dark mx-2 mb-2 text-lg">
-						Page {currentPage} of {totalPages} | Total Results: {totalResults}
-					</p>
-					<div class="flex justify-center">
-						<button
-							class="bg-secondary hover:bg-secondary flex items-center rounded px-4 py-2 text-white disabled:opacity-50"
-							on:click={goToPreviousPage}
-							disabled={currentPage === 1}
-						>
-							<Icon icon="mdi:arrow-left" class="mr-2" />
-							Previous
-						</button>
-						<button
-							class="bg-secondary hover:bg-secondary mx-2 flex items-center rounded px-4 py-2 text-white disabled:opacity-50"
-							on:click={goToNextPage}
-							disabled={currentPage === totalPages}
-						>
-							Next
-							<Icon icon="mdi:arrow-right" class="ml-2" />
-						</button>
-					</div>
-				</div>
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					totalResults={totalResults}
+					goToPreviousPage={goToPreviousPage}
+					goToNextPage={goToNextPage}
+				/>
+			{:else}
+				<p class="text-red-500">No movies found for "{searchQuery}"</p>
 			{/if}
 			<div
 				class="columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3"
