@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fly } from 'svelte/transition';
 	import apiClient from '$lib/plugins/interceptor';
@@ -30,7 +31,11 @@
 	function goToNextPage() {
 		// increment the current page
 		currentPage += 1;
-		showStore.searchShows(searchQuery, currentPage);
+		if (searchQuery.trim() !== '') {
+			showStore.searchShows(searchQuery, currentPage);
+		} else {
+			showStore.getPopularShows(currentPage);
+		}
 	}
 
 	function goToPreviousPage() {
@@ -38,7 +43,11 @@
 		if (currentPage < 1) {
 			currentPage = 1; // Prevent going below page 1
 		}
-		showStore.searchShows(searchQuery, currentPage);
+		if (searchQuery.trim() !== '') {
+			showStore.searchShows(searchQuery, currentPage);
+		} else {
+			showStore.getPopularShows(currentPage);
+		}
 	}
 
 	const goToShowDetails = (show: TVShow) => {
@@ -111,6 +120,11 @@
 			showSuggestions = false;
 		}, 100);
 	};
+
+	// Load popular shows on mount
+	onMount(() => {
+		showStore.getPopularShows(currentPage);
+	});
 </script>
 
 <svelte:head>
