@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import apiClient from '$lib/plugins/interceptor';
+	import { goto } from '$app/navigation';
 	import HeaderComponent from '$lib/components/Header.svelte';
 	import FooterComponent from '$lib/components/Footer.svelte';
 	import Loader from '$lib/components/Loader.svelte';
@@ -12,12 +14,132 @@
 
 	let displayedShowName = '';
 	let showNameIndex = 0;
+	let showImages = [];
+	let showVideos = [];
+	let showEpisodes = [];
+	let showSeasons = [];
+	let showCast = [];
+	let showCrew = [];
+	let showRecommendations = [];
+
+	const getShowImages = async (showId: number) => {
+		try {
+			const response = await apiClient.get(
+				`/tv/${showId}/images?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.backdrops) {
+				showImages = response.data.backdrops;
+			} else {
+				console.error('No images found for this show.');
+			}
+		} catch (error) {
+			console.error('Error fetching show images:', error);
+		}
+	};
+
+	const getShowVideos = async (showId: number) => {
+		try {
+			const response = await apiClient.get(
+				`/tv/${showId}/videos?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.results) {
+				showVideos = response.data.results;
+			} else {
+				console.error('No videos found for this show.');
+			}
+		} catch (error) {
+			console.error('Error fetching show videos:', error);
+		}
+	};
+
+	const getShowEpisodes = async (showId: number) => {
+		try {
+			const response = await apiClient.get(
+				`/tv/${showId}/season/1?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.episodes) {
+				showEpisodes = response.data.episodes;
+			} else {
+				console.error('No episodes found for this show.');
+			}
+		} catch (error) {
+			console.error('Error fetching show episodes:', error);
+		}
+	};
+
+	const getShowSeasons = async (showId: number) => {
+		try {
+			const response = await apiClient.get(
+				`/tv/${showId}/season/1?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.seasons) {
+				showSeasons = response.data.seasons;
+			} else {
+				console.error('No seasons found for this show.');
+			}
+		} catch (error) {
+			console.error('Error fetching show seasons:', error);
+		}
+	};
+
+	const getShowRecommendations = async (showId: number) => {
+		try {
+			const response = await apiClient.get(
+				`/tv/${showId}/recommendations?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.results) {
+				showRecommendations = response.data.results;
+			} else {
+				console.error('No recommendations found for this show.');
+			}
+		} catch (error) {
+			console.error('Error fetching show recommendations:', error);
+		}
+	};
+	const getShowCrew = async (showId: number) => {
+		try {
+			const response = await apiClient.get(
+				`/tv/${showId}/credits?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.crew) {
+				showCrew = response.data.crew;
+			} else {
+				console.error('No crew found for this show.');
+			}
+		} catch (error) {
+			console.error('Error fetching show crew:', error);
+		}
+	};
+
+	const getShowCast = async (showId: number) => {
+		try {
+			const response = await apiClient.get(
+				`/tv/${showId}/credits?api_key=${import.meta.env.VITE_APP_KEY}`
+			);
+			if (response.data && response.data.cast) {
+				showCast = response.data.cast;
+			} else {
+				console.error('No cast found for this show.');
+			}
+		} catch (error) {
+			console.error('Error fetching show cast:', error);
+		}
+	};
 
 	let pageLoaded = false;
 
 	// Trigger animation after the page loads
 	onMount(() => {
 		pageLoaded = true;
+		if (tvShow) {
+			getShowImages(tvShow.id);
+			getShowVideos(tvShow.id);
+			getShowEpisodes(tvShow.id);
+			getShowSeasons(tvShow.id);
+			getShowRecommendations(tvShow.id);
+			getShowCrew(tvShow.id);
+			getShowCast(tvShow.id);
+		}
 	});
 </script>
 
@@ -78,6 +200,159 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Images Section -->
+	{#if showImages.length > 0}
+		<div class="container mx-auto my-8">
+			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Images</h2>
+			<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+				{#each showImages as image}
+					<img
+						src={`https://image.tmdb.org/t/p/w500${image.file_path}`}
+						alt=""
+						class="rounded shadow"
+					/>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center text-gray-500">No images available for this show.</p>
+	{/if}
+
+	<!-- Videos Section -->
+	{#if showVideos.length > 0}
+		<div class="container mx-auto my-8">
+			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Videos</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				{#each showVideos as video}
+					<iframe
+						width="100%"
+						height="315"
+						src={`https://www.youtube.com/embed/${video.key}`}
+						title={video.name}
+						frameborder="0"
+						allowfullscreen
+					></iframe>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center text-gray-500">No videos available for this show.</p>
+	{/if}
+	
+	<!-- Cast Section -->
+	{#if showCast.length > 0}
+		<div class="container mx-auto my-8">
+			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Cast</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				{#each showCast as castMember}
+					<div class="p-4 bg-light rounded shadow">
+						<img
+							src={`https://image.tmdb.org/t/p/w500${castMember.profile_path}`}
+							alt={castMember.name}
+							class="rounded mb-4"
+						/>
+						<h3 class="text-xl font-semibold">{castMember.name}</h3>
+						<p>{castMember.character}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center text-gray-500">No cast information available for this show.</p>
+	{/if}
+
+	<!-- Crew Section -->
+	{#if showCrew.length > 0}
+		<div class="container mx-auto my-8">
+			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Crew</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				{#each showCrew as crewMember}
+					<div class="p-4 text-secondary text-center bg-light rounded shadow">
+						{#if crewMember.profile_path}
+							<img
+								src={`https://image.tmdb.org/t/p/w500${crewMember.profile_path}`}
+								alt={crewMember.name}
+								class="rounded mb-4"
+							/>
+						{:else}
+							<p>Image not available</p>
+						{/if}
+						<h3 class="text-2xl my-3 font-semibold">{crewMember.name}</h3>
+						<p>{crewMember.job}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center text-gray-500">No crew information available for this show.</p>
+	{/if}
+
+	<!-- Seasons -->
+	{#if showSeasons.length > 0}
+		<div class="container mx-auto my-8">
+			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Seasons</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				{#each showSeasons as season}
+					<div class="p-4 bg-light rounded shadow">
+						<img
+							src={`https://image.tmdb.org/t/p/w500${season.poster_path}`}
+							alt={season.name}
+							class="rounded mb-4"
+						/>
+						<h3 class="text-xl font-semibold">{season.name}</h3>
+						<p>{season.overview}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center text-gray-500">No seasons information available for this show.</p>
+	{/if}
+
+	<!-- Episodes -->
+	{#if showEpisodes.length > 0}
+		<div class="container mx-auto my-8">
+			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Episodes</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				{#each showEpisodes as episode}
+					<div class="p-4 bg-light rounded shadow">
+						<img
+							src={`https://image.tmdb.org/t/p/w500${episode.still_path}`}
+							alt={episode.name}
+							class="rounded mb-4"
+						/>
+						<h3 class="text-2xl text-center my-3 font-semibold">{episode.name}</h3>
+						<p>{episode.overview}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center text-gray-500">No episodes information available for this show.</p>
+	{/if}
+
+	<!-- Recommendations -->
+	{#if showRecommendations.length > 0}
+		<div class="container mx-auto my-8">
+			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Recommendations</h2>
+			<div class="columns-1 sm:columns-2 md:columns-3 gap-4">
+				{#each showRecommendations as recommendation}
+					<div class="mb-4 break-inside-avoid p-4 bg-light rounded shadow">
+						<img
+							src={`https://image.tmdb.org/t/p/w500${recommendation.poster_path}`}
+							alt={recommendation.name}
+							class="rounded mb-4"
+						/>
+						<h3 class="text-2xl my-3 text-secondary text-center font-semibold">{recommendation.name}</h3>
+						<p>{recommendation.overview}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<p class="text-center text-gray-500">No recommendations available for this show.</p>
+	{/if}
 {/if}
 
 <FooterComponent />
