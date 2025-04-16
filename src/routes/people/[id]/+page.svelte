@@ -19,6 +19,11 @@
 	let taggedImages: TaggedImage[] = [];
 	let combinedCredits: Image[] = [];
 	let selectedTab = 'images';
+	let tabs = [
+		{'name': 'images', 'label': 'Images', selected: true},
+		{'name': 'tagged', 'label': 'Tagged Images', selected: false},
+		{'name': 'combined', 'label': 'Combined Credits', selected: false}
+	]
 
 	const selectTab = (tab: string) => {
 		selectedTab = tab;
@@ -131,24 +136,19 @@
 
 		<!-- Tabs here -->
 		<div class="mt-8 p-4 shadow-xl">
-			<button
-				class="px-4 py-2 mr-2 text-white bg-primary rounded hover:bg-secondary hover:rounded-2xl"
-				on:click={() => selectTab('images')}
-			>
-				Images
-			</button>
-			<button
-				class="px-4 py-2 mr-2 text-white bg-primary rounded hover:bg-secondary hover:rounded-2xl"
-				on:click={() => selectTab('tagged')}
-			>
-				Tagged Images
-			</button>
-			<button
-				class="px-4 py-2 text-white bg-primary rounded hover:bg-secondary hover:rounded-2xl"
-				on:click={() => selectTab('combined')}
-			>
-				Combined Credits
-			</button>
+			<div class="flex justify-center space-x-4">
+				{#each tabs as tab}
+					<button
+						class={[
+							'px-4 py-2 font-semibold border-2 border-dark rounded hover:bg-primary hover:text-light transition-colors',
+							selectedTab === tab.name ? 'bg-secondary text-white' : ''
+						].join(' ')}
+						on:click={() => selectTab(tab.name)}
+					>
+						{tab.label}
+					</button>
+				{/each}
+			</div>
 		</div>
 
 		<!-- Display person images -->

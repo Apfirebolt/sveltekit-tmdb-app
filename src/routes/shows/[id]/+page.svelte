@@ -21,6 +21,21 @@
 	let showCast = [];
 	let showCrew = [];
 	let showRecommendations = [];
+	let selectedTab = 'images';
+
+	const selectTab = (tab: string) => {
+		selectedTab = tab;
+	};
+
+	let tabs = [
+		{ name: 'images', label: 'Images', selected: true },
+		{ name: 'videos', label: 'Videos', selected: false },
+		{ name: 'episodes', label: 'Episodes', selected: false },
+		{ name: 'seasons', label: 'Seasons', selected: false },
+		{ name: 'cast', label: 'Cast', selected: false },
+		{ name: 'crew', label: 'Crew', selected: false },
+		{ name: 'recommendations', label: 'Recommendations', selected: false }
+	]
 
 	const getShowImages = async (showId: number) => {
 		try {
@@ -201,157 +216,198 @@
 		</div>
 	</div>
 
-	<!-- Images Section -->
-	{#if showImages.length > 0}
-		<div class="container mx-auto my-8">
-			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Images</h2>
-			<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-				{#each showImages as image}
-					<img
-						src={`https://image.tmdb.org/t/p/w500${image.file_path}`}
-						alt=""
-						class="rounded shadow"
-					/>
-				{/each}
-			</div>
+	<!-- Tabs -->
+	<div class="container mx-auto my-8">
+		<div class="flex justify-center space-x-4">
+			{#each tabs as tab}
+			<button
+			class={[
+				'px-4 py-2 font-semibold border-2 border-dark rounded hover:bg-primary hover:text-light transition-colors',
+				selectedTab === tab.name ? 'bg-secondary text-white' : ''
+			].join(' ')}
+			on:click={() => selectTab(tab.name)}
+		>
+			{tab.label}
+		</button>
+			{/each}
 		</div>
-	{:else}
-		<p class="text-center text-gray-500">No images available for this show.</p>
+	</div>
+
+	<!-- Images Section -->
+	{#if selectedTab === 'images'}
+		{#if showImages.length > 0}
+			<div class="container mx-auto my-8">
+				<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Images</h2>
+				<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+					{#each showImages as image}
+						<img
+							src={`https://image.tmdb.org/t/p/w500${image.file_path}`}
+							alt=""
+							class="rounded shadow"
+						/>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<p class="text-center text-secondary">No images available for this show.</p>
+		{/if}
 	{/if}
 
 	<!-- Videos Section -->
-	{#if showVideos.length > 0}
-		<div class="container mx-auto my-8">
-			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Videos</h2>
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{#each showVideos as video}
-					<iframe
-						width="100%"
-						height="315"
-						src={`https://www.youtube.com/embed/${video.key}`}
-						title={video.name}
-						frameborder="0"
-						allowfullscreen
-					></iframe>
-				{/each}
+	{#if selectedTab === 'videos'}
+		{#if showVideos.length > 0}
+			<div class="container mx-auto my-8">
+				<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Videos</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{#each showVideos as video}
+						<iframe
+							width="100%"
+							height="315"
+							src={`https://www.youtube.com/embed/${video.key}`}
+							title={video.name}
+							frameborder="0"
+							allowfullscreen
+						></iframe>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center text-gray-500">No videos available for this show.</p>
+		{:else}
+			<p class="text-center text-secondary">No videos available for this show.</p>
+		{/if}
 	{/if}
 	
 	<!-- Cast Section -->
-	{#if showCast.length > 0}
-		<div class="container mx-auto my-8">
-			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Cast</h2>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-				{#each showCast as castMember}
-					<div class="p-4 bg-light rounded shadow">
-						<img
-							src={`https://image.tmdb.org/t/p/w500${castMember.profile_path}`}
-							alt={castMember.name}
-							class="rounded mb-4"
-						/>
-						<h3 class="text-xl font-semibold">{castMember.name}</h3>
-						<p>{castMember.character}</p>
-					</div>
-				{/each}
+	{#if selectedTab === 'cast'}
+		{#if showCast.length > 0}
+			<div class="container mx-auto my-8">
+				<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Cast</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{#each showCast as castMember}
+						<div class="p-4 text-secondary text-center bg-light rounded shadow">
+							{#if castMember.profile_path}
+								<img
+									src={`https://image.tmdb.org/t/p/w500${castMember.profile_path}`}
+									alt={castMember.name}
+									class="rounded mb-4"
+								/>
+							{:else}
+								<p>Image not available</p>
+							{/if}
+							<h3 class="text-2xl my-3 font-semibold">{castMember.name}</h3>
+							<p>{castMember.character}</p>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center text-gray-500">No cast information available for this show.</p>
+		{:else}
+			<p class="text-center text-secondary">No cast information available for this show.</p>
+		{/if}
 	{/if}
-
+	 
 	<!-- Crew Section -->
-	{#if showCrew.length > 0}
-		<div class="container mx-auto my-8">
-			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Crew</h2>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-				{#each showCrew as crewMember}
-					<div class="p-4 text-secondary text-center bg-light rounded shadow">
-						{#if crewMember.profile_path}
-							<img
-								src={`https://image.tmdb.org/t/p/w500${crewMember.profile_path}`}
-								alt={crewMember.name}
-								class="rounded mb-4"
-							/>
-						{:else}
-							<p>Image not available</p>
-						{/if}
-						<h3 class="text-2xl my-3 font-semibold">{crewMember.name}</h3>
-						<p>{crewMember.job}</p>
-					</div>
-				{/each}
+	{#if selectedTab === 'crew'}
+		{#if showCrew.length > 0}
+			<div class="container mx-auto my-8">
+				<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Crew</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{#each showCrew as crewMember}
+						<div class="p-4 text-secondary text-center bg-light rounded shadow">
+							{#if crewMember.profile_path}
+								<img
+									src={`https://image.tmdb.org/t/p/w500${crewMember.profile_path}`}
+									alt={crewMember.name}
+									class="rounded mb-4"
+								/>
+							{:else}
+								<p>Image not available</p>
+							{/if}
+							<h3 class="text-2xl my-3 font-semibold">{crewMember.name}</h3>
+							<p>{crewMember.job}</p>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center text-gray-500">No crew information available for this show.</p>
+		{:else}
+			<p class="text-center text-secondary">No crew information available for this show.</p>
+		{/if}
 	{/if}
 
 	<!-- Seasons -->
-	{#if showSeasons.length > 0}
-		<div class="container mx-auto my-8">
-			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Seasons</h2>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-				{#each showSeasons as season}
-					<div class="p-4 bg-light rounded shadow">
-						<img
-							src={`https://image.tmdb.org/t/p/w500${season.poster_path}`}
-							alt={season.name}
-							class="rounded mb-4"
-						/>
-						<h3 class="text-xl font-semibold">{season.name}</h3>
-						<p>{season.overview}</p>
-					</div>
-				{/each}
+	{#if selectedTab === 'seasons'}
+		{#if showSeasons.length > 0}
+			<div class="container mx-auto my-8">
+				<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Seasons</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{#each showSeasons as season}
+						<div class="p-4 bg-light rounded shadow">
+							<img
+								src={`https://image.tmdb.org/t/p/w500${season.poster_path}`}
+								alt={season.name}
+								class="rounded mb-4"
+							/>
+							<h3 class="text-2xl text-center my-3 font-semibold">{season.name}</h3>
+							<p>Air Date: {season.air_date}</p>
+							<p>Episodes: {season.episode_count}</p>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center text-gray-500">No seasons information available for this show.</p>
+		{:else}
+			<p class="text-center text-secondary">No seasons information available for this show.</p>
+		{/if}
 	{/if}
 
 	<!-- Episodes -->
-	{#if showEpisodes.length > 0}
-		<div class="container mx-auto my-8">
-			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Episodes</h2>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-				{#each showEpisodes as episode}
-					<div class="p-4 bg-light rounded shadow">
-						<img
-							src={`https://image.tmdb.org/t/p/w500${episode.still_path}`}
-							alt={episode.name}
-							class="rounded mb-4"
-						/>
-						<h3 class="text-2xl text-center my-3 font-semibold">{episode.name}</h3>
-						<p>{episode.overview}</p>
-					</div>
-				{/each}
+	{#if selectedTab === 'episodes'}
+		{#if showEpisodes.length > 0}
+			<div class="container mx-auto my-8">
+				<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Episodes</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{#each showEpisodes as episode}
+						<div class="p-4 bg-light rounded shadow">
+							{#if episode.still_path}
+								<img
+									src={`https://image.tmdb.org/t/p/w500${episode.still_path}`}
+									alt={episode.name}
+									class="rounded mb-4"
+								/>
+							{:else}
+								<p class="text-center text-lg my-2">Image not available</p>
+							{/if}
+							<h3 class="text-2xl text-center my-3 font-semibold">{episode.name}</h3>
+							<p>Air Date: {episode.air_date}</p>
+							<p>{episode.overview}</p>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center text-gray-500">No episodes information available for this show.</p>
+		{:else}
+			<p class="text-center text-secondary">No episodes information available for this show.</p>
+		{/if}
 	{/if}
 
 	<!-- Recommendations -->
-	{#if showRecommendations.length > 0}
-		<div class="container mx-auto my-8">
-			<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Recommendations</h2>
-			<div class="columns-1 sm:columns-2 md:columns-3 gap-4">
-				{#each showRecommendations as recommendation}
-					<div class="mb-4 break-inside-avoid p-4 bg-light rounded shadow">
-						<img
-							src={`https://image.tmdb.org/t/p/w500${recommendation.poster_path}`}
-							alt={recommendation.name}
-							class="rounded mb-4"
-						/>
-						<h3 class="text-2xl my-3 text-secondary text-center font-semibold">{recommendation.name}</h3>
-						<p>{recommendation.overview}</p>
-					</div>
-				{/each}
+	{#if selectedTab === 'recommendations'}
+		{#if showRecommendations.length > 0}
+			<div class="container mx-auto my-8">
+				<h2 class="bg-primary text-light mb-4 p-2 text-center text-2xl font-bold">Recommendations</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{#each showRecommendations as recommendation}
+						<div class="p-4 bg-light rounded shadow">
+							<img
+								src={`https://image.tmdb.org/t/p/w500${recommendation.poster_path}`}
+								alt={recommendation.name}
+								class="rounded mb-4"
+							/>
+							<h3 class="text-2xl text-center my-3 font-semibold">{recommendation.name}</h3>
+							<p>{recommendation.overview}</p>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else}
-		<p class="text-center text-gray-500">No recommendations available for this show.</p>
+		{:else}
+			<p class="text-center text-secondary">No recommendations available for this show.</p>
+		{/if}
 	{/if}
 {/if}
 
