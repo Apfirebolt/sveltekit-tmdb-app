@@ -1,7 +1,7 @@
 // src/lib/stores/movieStore.ts
 import { writable } from 'svelte/store';
 import apiClient from '$lib/plugins/interceptor';
-import type { Movie, MovieResponse } from '$lib/types/movie';
+import type { Movie, MovieResponse } from '$lib/types/Movie';
 
 function createMovieStore() {
     const { subscribe, set, update } = writable({

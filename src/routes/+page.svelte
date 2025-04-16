@@ -1,11 +1,19 @@
-<script>
+<script lang="ts">
+    import { onMount } from 'svelte';
     import { fly } from 'svelte/transition';
+    import { goto } from '$app/navigation';
     import HeaderComponent from '$lib/components/Header.svelte';
     import FooterComponent from '$lib/components/Footer.svelte';
+    import { trendingStore } from '$lib/stores/trending';
+	import type { Movie } from '$lib/types/Movie';
+
+	$: ({ loading, movies } = $trendingStore);
 
     let text = "Welcome to TMDB Movies App";
     let displayedText = "";
     let index = 0;
+    let currentPage = 1;
+
 
     // Typewriter effect logic
     const typeWriter = () => {
@@ -18,6 +26,15 @@
 
     // Start the typewriter effect when the component is mounted
     typeWriter();
+
+    const goToMovieDetails = (movie: Movie) => {
+        goto(`/movies/${movie.id}`);
+    };
+
+
+    onMount(() => {
+        trendingStore.getTrendingMovies('day', currentPage); // Replace 'day' and 'movie' with appropriate arguments
+    });
 </script>
 
 <HeaderComponent />
@@ -60,5 +77,27 @@
         </div>
     </div>
 </section>
+
+<!-- Trending Movie section -->
+ <section>
+    <div class="container mx-auto pb-4">
+        <h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2" in:fly={{ y: 50, duration: 500 }}>
+            Trending Movies
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {#each movies as movie}
+                <div class="bg-white shadow-lg rounded-lg p-4" in:fly={{ y: 50, duration: 500 }}>
+                    <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} class="rounded-lg mb-4" />
+                    <h3 class="text-2xl my-2 font-semibold">{movie.title}</h3>
+                    <p class="my-2">{movie.release_date}</p>
+                    <p class="text-gray-600">{movie.overview}</p>
+                    <button class="bg-primary hover:bg-danger text-light rounded-md shadow-lg mt-4 px-2 py-1 inline-block" on:click={() => goToMovieDetails(movie)}>
+                        View Details
+                    </button>
+                </div>
+            {/each}
+        </div>
+    </div>
+ </section>
 
 <FooterComponent />
