@@ -18,6 +18,11 @@
 	let personImages: Image[] = [];
 	let taggedImages: TaggedImage[] = [];
 	let combinedCredits: Image[] = [];
+	let selectedTab = 'images';
+
+	const selectTab = (tab: string) => {
+		selectedTab = tab;
+	};
 
 	const getPersonImages = async (personId: string) => {
 		try {
@@ -124,8 +129,31 @@
 			</div>
 		</div>
 
+		<!-- Tabs here -->
+		<div class="mt-8 p-4 shadow-xl">
+			<button
+				class="px-4 py-2 mr-2 text-white bg-primary rounded hover:bg-secondary hover:rounded-2xl"
+				on:click={() => selectTab('images')}
+			>
+				Images
+			</button>
+			<button
+				class="px-4 py-2 mr-2 text-white bg-primary rounded hover:bg-secondary hover:rounded-2xl"
+				on:click={() => selectTab('tagged')}
+			>
+				Tagged Images
+			</button>
+			<button
+				class="px-4 py-2 text-white bg-primary rounded hover:bg-secondary hover:rounded-2xl"
+				on:click={() => selectTab('combined')}
+			>
+				Combined Credits
+			</button>
+		</div>
+
 		<!-- Display person images -->
-		{#if personImages.length > 0}
+		{#if selectedTab === 'images'}
+			<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Person Images</h2>
 			<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
 				{#each personImages as image}
 					<img
@@ -135,12 +163,13 @@
 					/>
 				{/each}
 			</div>
-		{:else}
-			<p class="mt-8 text-gray-500">No images available.</p>
+			{#if personImages.length === 0}
+				<p class="mt-8 text-gray-500 text-center">No images available for this person.</p>
+			{/if}
 		{/if}
 
 		<!-- Display Tagged Images -->
-		{#if taggedImages.length > 0}
+		{#if selectedTab === 'tagged'}
 			<div>
 				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Tagged Images</h2>
 				<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -153,12 +182,13 @@
 					{/each}
 				</div>
 			</div>
-		{:else}
-			<p class="mt-8 text-gray-500">No tagged images available.</p>
+			{#if taggedImages.length === 0}
+				<p class="mt-8 text-gray-500 text-center">No tagged images available for this person.</p>
+			{/if}
 		{/if}
 
 		<!-- Display Combined Credits -->
-		{#if combinedCredits.length > 0}
+		{#if selectedTab === 'combined'}
 			<div>
 				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Combined Credits</h2>
 				<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -184,8 +214,9 @@
 					{/each}
 				</div>
 			</div>
-		{:else}
-			<p class="mt-8 text-gray-500">No combined credits available.</p>
+			{#if combinedCredits.length === 0}
+				<p class="mt-8 text-gray-500 text-center">No combined credits available for this person.</p>
+			{/if}
 		{/if}
 	</div>
 {/if}
