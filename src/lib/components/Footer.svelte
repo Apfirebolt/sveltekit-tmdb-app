@@ -6,7 +6,8 @@
 		{ name: 'Movies', url: '/movies' },
 		{ name: 'Person', url: '/people' },
 		{ name: 'TV Shows', url: '/shows' },
-		{ name: 'Collection', url: '/collection' }
+		{ name: 'Collection', url: '/collection' },
+		{ name: 'Discover', url: '/discover' }
 	];
 </script>
 
