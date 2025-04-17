@@ -97,3 +97,18 @@ export interface DetailedTVShow {
     vote_average: number;
     vote_count: number;
 }
+
+export interface Episode {
+    air_date: string;
+    episode_number: number;
+    id: number;
+    name: string;
+    overview: string;
+    production_code: string;
+    runtime: number | null;
+    season_number: number;
+    show_id: number;
+    still_path: string | null;
+    vote_average: number;
+    vote_count: number;
+}
