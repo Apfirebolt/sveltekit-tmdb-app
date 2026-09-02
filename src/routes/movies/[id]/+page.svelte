@@ -1,358 +1,427 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
-	import apiClient from '$lib/plugins/interceptor';
-	import HeaderComponent from '$lib/components/Header.svelte';
-	import FooterComponent from '$lib/components/Footer.svelte';
-	import PersonCardView from '$lib/components/PersonCardView.svelte';
-	import Loader from '$lib/components/Loader.svelte';
-	import type { DetailedMovie } from '$lib/types/Movie.ts'; // Import as a type
+    import { onMount } from 'svelte';
+    import { fly, fade } from 'svelte/transition';
+    import apiClient from '$lib/plugins/interceptor';
+    import HeaderComponent from '$lib/components/Header.svelte';
+    import FooterComponent from '$lib/components/Footer.svelte';
+    import PersonCardView from '$lib/components/PersonCardView.svelte';
+    import Loader from '$lib/components/Loader.svelte';
+    import Icon from '@iconify/svelte';
+    import type { DetailedMovie } from '$lib/types/Movie.ts';
 
-	export let data; // Receive data from the load function in +page.server.ts
+    export let data;
 
-	$: movie = data.movie as DetailedMovie | null; // Assign data.movie to the movie variable.
+    $: movie = data.movie as DetailedMovie | null;
 
-	let displayedMovieName = '';
-	let movieNameIndex = 0;
-	let movieImages: any[] = [];
-	let movieVideos: any[] = [];
-	let movieRecommendations: any[] = [];
-	let movieReviews: any[] = [];
-	let movieCast: any[] = [];
-	let movieCrew: any[] = [];
-	let tabs = [
-		{ name: 'images', label: 'Images', selected: true },
-		{ name: 'videos', label: 'Videos', selected: false },
-		{ name: 'recommendations', label: 'Recommendations', selected: false },
-		{ name: 'reviews', label: 'Reviews', selected: false },
-		{ name: 'cast', label: 'Cast', selected: false },
-		{ name: 'crew', label: 'Crew', selected: false }
-	];
-	let selectedTab = 'images';
-	const selectTab = (tab: string) => {
-		selectedTab = tab;
-	};
+    let movieImages: any[] = [];
+    let movieVideos: any[] = [];
+    let movieRecommendations: any[] = [];
+    let movieReviews: any[] = [];
+    let movieCast: any[] = [];
+    let movieCrew: any[] = [];
 
-	let pageLoaded = false;
+    const tabs = [
+        { name: 'images', label: 'Images', icon: 'mdi:image-multiple-outline' },
+        { name: 'videos', label: 'Videos', icon: 'mdi:play-circle-outline' },
+        { name: 'cast', label: 'Cast', icon: 'mdi:account-group-outline' },
+        { name: 'crew', label: 'Crew', icon: 'mdi:account-tie-outline' },
+        { name: 'reviews', label: 'Reviews', icon: 'mdi:comment-quote-outline' },
+        { name: 'recommendations', label: 'Recommendations', icon: 'mdi:movie-open-star-outline' }
+    ];
 
-	const getMovieImages = async (movieId: string) => {
-		try {
-			const response = await apiClient.get(
-				`/movie/${movieId}/images?api_key=${import.meta.env.VITE_APP_KEY}`
-			);
-			if (response.data && response.data.backdrops) {
-				movieImages = response.data.backdrops;
-			} else {
-				console.error('No images found for this movie.');
-			}
-		} catch (error) {
-			console.error('Error fetching movie images:', error);
-		}
-	};
+    let selectedTab = 'images';
+    const selectTab = (tab: string) => {
+        selectedTab = tab;
+    };
 
-	const getMovieVideos = async (movieId: string) => {
-		try {
-			const response = await apiClient.get(
-				`/movie/${movieId}/videos?api_key=${import.meta.env.VITE_APP_KEY}`
-			);
-			if (response.data && response.data.results) {
-				movieVideos = response.data.results;
-			} else {
-				console.error('No videos found for this movie.');
-			}
-		} catch (error) {
-			console.error('Error fetching movie videos:', error);
-		}
-	};
+    const getMovieImages = async (movieId: string | number) => {
+        try {
+            const response = await apiClient.get(
+                `/movie/${movieId}/images?api_key=${import.meta.env.VITE_APP_KEY}`
+            );
+            if (response.data?.backdrops) {
+                movieImages = response.data.backdrops;
+            }
+        } catch (error) {
+            console.error('Error fetching movie images:', error);
+        }
+    };
 
-	const getMovieRecommendations = async (movieId: string) => {
-		try {
-			const response = await apiClient.get(
-				`/movie/${movieId}/recommendations?api_key=${import.meta.env.VITE_APP_KEY}`
-			);
-			if (response.data && response.data.results) {
-				movieRecommendations = response.data.results;
-			} else {
-				console.error('No recommendations found for this movie.');
-			}
-		} catch (error) {
-			console.error('Error fetching movie recommendations:', error);
-		}
-	};
+    const getMovieVideos = async (movieId: string | number) => {
+        try {
+            const response = await apiClient.get(
+                `/movie/${movieId}/videos?api_key=${import.meta.env.VITE_APP_KEY}`
+            );
+            if (response.data?.results) {
+                movieVideos = response.data.results;
+            }
+        } catch (error) {
+            console.error('Error fetching movie videos:', error);
+        }
+    };
 
-	const getMovieReviews = async (movieId: string) => {
-		try {
-			const response = await apiClient.get(
-				`/movie/${movieId}/reviews?api_key=${import.meta.env.VITE_APP_KEY}`
-			);
-			if (response.data && response.data.results) {
-				movieReviews = response.data.results;
-			} else {
-				console.error('No reviews found for this movie.');
-			}
-		} catch (error) {
-			console.error('Error fetching movie reviews:', error);
-		}
-	};
+    const getMovieRecommendations = async (movieId: string | number) => {
+        try {
+            const response = await apiClient.get(
+                `/movie/${movieId}/recommendations?api_key=${import.meta.env.VITE_APP_KEY}`
+            );
+            if (response.data?.results) {
+                movieRecommendations = response.data.results;
+            }
+        } catch (error) {
+            console.error('Error fetching movie recommendations:', error);
+        }
+    };
 
-	const getMovieCast = async (movieId: string) => {
-		try {
-			const response = await apiClient.get(
-				`/movie/${movieId}/credits?api_key=${import.meta.env.VITE_APP_KEY}`
-			);
-			if (response.data && response.data.cast) {
-				movieCast = response.data.cast;
-			} else {
-				console.error('No cast found for this movie.');
-			}
-		} catch (error) {
-			console.error('Error fetching movie cast:', error);
-		}
-	};
+    const getMovieReviews = async (movieId: string | number) => {
+        try {
+            const response = await apiClient.get(
+                `/movie/${movieId}/reviews?api_key=${import.meta.env.VITE_APP_KEY}`
+            );
+            if (response.data?.results) {
+                movieReviews = response.data.results;
+            }
+        } catch (error) {
+            console.error('Error fetching movie reviews:', error);
+        }
+    };
 
-	const getMovieCrew = async (movieId: string) => {
-		try {
-			const response = await apiClient.get(
-				`/movie/${movieId}/credits?api_key=${import.meta.env.VITE_APP_KEY}`
-			);
-			if (response.data && response.data.crew) {
-				movieCrew = response.data.crew;
-			} else {
-				console.error('No crew found for this movie.');
-			}
-		} catch (error) {
-			console.error('Error fetching movie crew:', error);
-		}
-	};
+    const getMovieCast = async (movieId: string | number) => {
+        try {
+            const response = await apiClient.get(
+                `/movie/${movieId}/credits?api_key=${import.meta.env.VITE_APP_KEY}`
+            );
+            if (response.data?.cast) {
+                movieCast = response.data.cast;
+            }
+            if (response.data?.crew) {
+                movieCrew = response.data.crew;
+            }
+        } catch (error) {
+            console.error('Error fetching credits:', error);
+        }
+    };
 
-	// Function to display movie name with animation
-	const displayMovieName = () => {
-		if (movie && movie.title) {
-			displayedMovieName = movie.title[movieNameIndex];
-			movieNameIndex = (movieNameIndex + 1) % movie.title.length;
-		}
-	};
+    const getMovieCrew = async (movieId: string | number) => {
+        // Handled simultaneously via credits endpoint in getMovieCast
+    };
 
-	// Trigger animation after the page loads
-	onMount(() => {
-		pageLoaded = true;
-		if (movie) {
-			getMovieImages(movie.id);
-			getMovieVideos(movie.id);
-			getMovieRecommendations(movie.id);
-			getMovieReviews(movie.id);
-			getMovieCast(movie.id);
-			getMovieCrew(movie.id);
-		}
-	});
+    onMount(() => {
+        if (movie?.id) {
+            Promise.all([
+                getMovieImages(movie.id),
+                getMovieVideos(movie.id),
+                getMovieRecommendations(movie.id),
+                getMovieReviews(movie.id),
+                getMovieCast(movie.id)
+            ]);
+        }
+    });
 </script>
 
 <svelte:head>
-	<title>{movie ? movie.title : 'Loading...'}</title>
-	<meta name="description" content={movie ? movie.overview : 'Loading...'} />
+    <title>{movie ? movie.title : 'Loading...'} - TMDB</title>
+    <meta name="description" content={movie?.overview || 'Movie Details'} />
 </svelte:head>
 
-<HeaderComponent title={movie ? `${movie.title}` : 'Movie Details'} />
+<HeaderComponent title={movie ? movie.title : 'Movie Details'} />
 
 {#if !movie}
-	<Loader />
+    <div class="flex min-h-[70vh] items-center justify-center">
+        <Loader />
+    </div>
 {:else}
-	<section
-		class="relative h-[500px] bg-center bg-no-repeat"
-		style="background-image: url('https://image.tmdb.org/t/p/original{movie.poster_path}');"
-	>
-		<div
-			class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-gradient-to-b from-black via-transparent to-black"
-		>
-			<div class="min-w-xl text-center text-white">
-			</div>
-		</div>
-	</section>
+    <!-- Immersive Hero with Poster Backdrop & Vignette Overlay -->
+    <div class="relative w-full overflow-hidden bg-dark text-light">
+        <div
+            class="absolute inset-0 bg-cover bg-center filter blur-md opacity-35 scale-105"
+            style="background-image: url('https://image.tmdb.org/t/p/w1280{movie.backdrop_path || movie.poster_path}');"
+        ></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-dark via-dark/60 to-transparent"></div>
 
-	<div
-		class="container mx-auto text-center text-dark my-5"
-		in:fly={{ y: 50, duration: 500 }}
-	>
-		<h1 class="text-4xl font-bold mb-4">{movie.title}</h1>
-		<p class="text-lg mb-6">{movie.overview}</p>
+        <div class="container relative z-10 mx-auto px-4 py-12 md:py-20 lg:px-8">
+            <div class="flex flex-col md:flex-row gap-8 lg:gap-12 items-start" in:fly={{ y: 30, duration: 600 }}>
+                <!-- Floating Poster Card -->
+                <div class="w-48 sm:w-64 md:w-80 shrink-0 mx-auto md:mx-0 shadow-2xl rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                    {#if movie.poster_path}
+                        <img
+                            src={`https://image.tmdb.org/t/p/w780${movie.poster_path}`}
+                            alt={movie.title}
+                            class="w-full h-auto object-cover"
+                        />
+                    {:else}
+                        <div class="aspect-[2/3] flex flex-col items-center justify-center p-6 text-light/40 text-center">
+                            <Icon icon="mdi:filmstrip-off" class="text-5xl mb-2" />
+                            <span class="text-sm">Poster unavailable</span>
+                        </div>
+                    {/if}
+                </div>
 
-		<div class="grid grid-cols-1 text-dark md:grid-cols-3 gap-4">
-			<div class="p-4 bg-light rounded shadow">
-				<h2 class="text-xl font-semibold mb-2">Release Date</h2>
-				<p>{movie.release_date}</p>
-			</div>
-			<div class="p-4 bg-light rounded shadow">
-				<h2 class="text-xl font-semibold mb-2">Rating</h2>
-				<p>{movie.vote_average} / 10</p>
-			</div>
-			<div class="p-4 bg-light rounded shadow">
-				<h2 class="text-xl font-semibold mb-2">Genres</h2>
-				<p>{movie.genres.map(genre => genre.name).join(', ')}</p>
-			</div>
+                <!-- Core Details & Quick Badges -->
+                <div class="flex-1 text-left">
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        {#if movie.release_date}
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-white/10 backdrop-blur-md border border-white/15">
+                                {movie.release_date.split('-')[0]}
+                            </span>
+                        {/if}
+                        {#if movie.runtime}
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-white/10 backdrop-blur-md border border-white/15">
+                                {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
+                            </span>
+                        {/if}
+                        <div class="flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-md bg-primary text-light shadow-sm">
+                            <Icon icon="mdi:star" class="text-sm text-yellow-300" />
+                            <span>{movie.vote_average?.toFixed(1) || 'N/A'} / 10</span>
+                        </div>
+                    </div>
 
-			<div class="p-4 bg-light rounded shadow">
-				<h2 class="text-xl font-semibold mb-2">Runtime</h2>
-				<p>{movie.runtime} minutes</p>
-			</div>
-			<div class="p-4 bg-light rounded shadow">
-				<h2 class="text-xl font-semibold mb-2">Production Companies</h2>
-				<p>{movie.production_companies.map(company => company.name).join(', ')}</p>
-			</div>
-			<div class="p-4 bg-light rounded shadow">
-				<h2 class="text-xl font-semibold mb-2">Spoken Languages</h2>
-				<p>{movie.spoken_languages.map(language => language.name).join(', ')}</p>
-			</div>
-		</div>
-	</div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-4">
+                        {movie.title}
+                    </h1>
 
-	<!-- Tabs here -->
-	<div class="mt-8 p-4 shadow-xl">
-		<div class="flex justify-center space-x-4">
-			{#each tabs as tab}
-				<button
-					class={[
-						'px-4 py-2 font-semibold border-2 border-dark rounded hover:bg-primary hover:text-light transition-colors',
-						selectedTab === tab.name ? 'bg-secondary text-white' : ''
-					].join(' ')}
-					on:click={() => selectTab(tab.name)}
-				>
-					{tab.label}
-				</button>
-			{/each}
-		</div>
-	</div>
+                    {#if movie.genres?.length}
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            {#each movie.genres as genre}
+                                <span class="rounded-full bg-secondary/30 px-3 py-0.5 text-xs font-medium text-light/90 border border-secondary/40">
+                                    {genre.name}
+                                </span>
+                            {/each}
+                        </div>
+                    {/if}
 
-	<!-- Conditional rendering based on selected tab -->
-	{#if selectedTab === 'images'}
-		<!-- Container for movie images -->
-		{#if movieImages.length > 0}
-			<div class="container mx-auto my-5">
-				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Images</h2>
-				<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-					{#each movieImages as image}
-						<img
-							src={`https://image.tmdb.org/t/p/original${image.file_path}`}
-							alt={`Image from the movie ${movie.title}`}
-							class="rounded shadow-xl h-96"
-						/>
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="text-center my-3">No images available for this movie.</p>
-		{/if}
-	{/if}
+                    <div class="mb-6">
+                        <h2 class="text-xs uppercase tracking-wider text-light/60 font-semibold mb-2">Overview</h2>
+                        <p class="text-sm sm:text-base leading-relaxed text-light/85 max-w-3xl">
+                            {movie.overview || 'No synopsis has been provided for this title.'}
+                        </p>
+                    </div>
 
-	{#if selectedTab === 'videos'}
-		<!-- Container for movie videos -->
-		{#if movieVideos.length > 0}
-			<div class="container mx-auto my-5">
-				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Videos</h2>
-				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-					{#each movieVideos as video}
-						<iframe
-							width="100%"
-							height="315"
-							src={`https://www.youtube.com/embed/${video.key}`}
-							title={video.name}
-							frameborder="0"
-							allowfullscreen
-						></iframe>
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="text-center my-3">No videos available for this movie.</p>
-		{/if}
-	{/if}
+                    <!-- Compact Metadata Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10 text-xs">
+                        <div>
+                            <span class="text-light/50 block mb-1">Status</span>
+                            <span class="font-medium">{movie.status || 'Released'}</span>
+                        </div>
+                        <div>
+                            <span class="text-light/50 block mb-1">Languages</span>
+                            <span class="font-medium truncate block" title={movie.spoken_languages?.map(l => l.name).join(', ')}>
+                                {movie.spoken_languages?.map(l => l.name).join(', ') || 'N/A'}
+                            </span>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                            <span class="text-light/50 block mb-1">Production</span>
+                            <span class="font-medium truncate block" title={movie.production_companies?.map(c => c.name).join(', ')}>
+                                {movie.production_companies?.map(c => c.name).join(', ') || 'N/A'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	{#if selectedTab === 'cast'}
-		<!-- Movie Cast -->
-		{#if movieCast.length > 0}
-			<div class="container mx-auto my-5">
-				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Cast</h2>
-				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-					{#each movieCast as cast}
-						<PersonCardView cast={cast} />
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="text-center my-3">No cast information available for this movie.</p>
-		{/if}
-	{/if}
+    <!-- Secondary Media Tabs Bar -->
+    <div class="sticky top-20 z-30 border-b border-secondary/15 bg-light/95 backdrop-blur-md">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-3 no-scrollbar" aria-label="Media tabs">
+                {#each tabs as tab}
+                    <button
+                        type="button"
+                        class={[
+                            'flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-150',
+                            selectedTab === tab.name
+                                ? 'bg-primary text-light shadow-md shadow-primary/20'
+                                : 'text-dark/70 hover:text-dark hover:bg-secondary/10'
+                        ].join(' ')}
+                        on:click={() => selectTab(tab.name)}
+                    >
+                        <Icon icon={tab.icon} class="text-base" />
+                        <span>{tab.label}</span>
+                    </button>
+                {/each}
+            </nav>
+        </div>
+    </div>
 
-	{#if selectedTab === 'crew'}
-		<!-- Movie Crew -->
-		{#if movieCrew.length > 0}
-			<div class="container mx-auto my-5">
-				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Crew</h2>
-				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-					{#each movieCrew as crew}
-						<div class="p-4 bg-light rounded shadow">
-							{#if crew.profile_path}
-								<img
-									src={`https://image.tmdb.org/t/p/original${crew.profile_path}`}
-									alt={crew.name}
-									class="rounded shadow mb-2"
-								/>
-							{:else}
-								<p class="text-center my-3 text-secondary">Image not available</p>
-							{/if}
-							<h3 class="text-lg font-semibold">{crew.name}</h3>
-							<p>{crew.job}</p>
-						</div>
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="text-center my-3">No crew information available for this movie.</p>
-		{/if}
-	{/if}
+    <!-- Dynamic Tab Content Sections -->
+    <main class="container mx-auto min-h-[400px] px-4 py-10 sm:px-6 lg:px-8">
+        <!-- Images -->
+        {#if selectedTab === 'images'}
+            {#if movieImages.length > 0}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" in:fade={{ duration: 250 }}>
+                    {#each movieImages as image}
+                        <div class="group relative aspect-video overflow-hidden rounded-2xl bg-dark shadow-md border border-secondary/10">
+                            <img
+                                src={`https://image.tmdb.org/t/p/w780${image.file_path}`}
+                                alt="Backdrop from {movie.title}"
+                                loading="lazy"
+                                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <div class="py-16 text-center text-dark/60">
+                    <Icon icon="mdi:image-off-outline" class="mx-auto text-5xl mb-2 opacity-40" />
+                    <p class="font-medium">No backdrops or images found for this title.</p>
+                </div>
+            {/if}
+        {/if}
 
-	{#if selectedTab === 'reviews'}
-		<!-- Movie Reviews -->
-		{#if movieReviews.length > 0}
-			<div class="container mx-auto my-5">
-				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Reviews</h2>
-				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-					{#each movieReviews as review}
-						<div class="p-4 bg-light rounded shadow">
-							<h3 class="text-lg font-semibold my-3 text-center">{review.author}</h3>
-							<p>{review.content}</p>
-						</div>
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="text-center my-3">No reviews available for this movie.</p>
-		{/if}
-	{/if}
+        <!-- Videos -->
+        {#if selectedTab === 'videos'}
+            {#if movieVideos.length > 0}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" in:fade={{ duration: 250 }}>
+                    {#each movieVideos as video}
+                        <div class="overflow-hidden rounded-2xl bg-dark shadow-md border border-secondary/10">
+                            <div class="aspect-video w-full">
+                                <iframe
+                                    class="h-full w-full"
+                                    src={`https://www.youtube-nocookie.com/embed/${video.key}`}
+                                    title={video.name}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+                            <div class="p-3 bg-white border-t border-gray-100">
+                                <h3 class="text-xs font-bold text-dark truncate" title={video.name}>{video.name}</h3>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <div class="py-16 text-center text-dark/60">
+                    <Icon icon="mdi:video-off-outline" class="mx-auto text-5xl mb-2 opacity-40" />
+                    <p class="font-medium">No promotional trailers or clips available.</p>
+                </div>
+            {/if}
+        {/if}
 
-	{#if selectedTab === 'recommendations'}
-		<!-- Movie Recommendations -->
-		{#if movieRecommendations.length > 0}
-			<div class="container mx-auto my-5">
-				<h2 class="text-2xl font-bold mb-4 bg-primary text-light text-center p-2">Movie Recommendations</h2>
-				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-					{#each movieRecommendations as recommendation}
-						<div class="p-4 bg-light rounded shadow">
-							<img
-								src={`https://image.tmdb.org/t/p/original${recommendation.poster_path}`}
-								alt={recommendation.title}
-								class="rounded shadow mb-2"
-							/>
-							<h3 class="text-xl font-semibold text-secondary mt-2 text-center">{recommendation.title}</h3>
-						</div>
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="text-center my-3">No recommendations available for this movie.</p>
-		{/if}
-	{/if}
+        <!-- Cast -->
+        {#if selectedTab === 'cast'}
+            {#if movieCast.length > 0}
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" in:fade={{ duration: 250 }}>
+                    {#each movieCast as cast}
+                        <PersonCardView {cast} />
+                    {/each}
+                </div>
+            {:else}
+                <div class="py-16 text-center text-dark/60">
+                    <Icon icon="mdi:account-off-outline" class="mx-auto text-5xl mb-2 opacity-40" />
+                    <p class="font-medium">No cast members cataloged for this title.</p>
+                </div>
+            {/if}
+        {/if}
 
-{/if}		
+        <!-- Crew -->
+        {#if selectedTab === 'crew'}
+            {#if movieCrew.length > 0}
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" in:fade={{ duration: 250 }}>
+                    {#each movieCrew as crew}
+                        <div class="flex flex-col overflow-hidden rounded-2xl border border-secondary/15 bg-light p-3 text-center shadow-sm">
+                            <div class="relative aspect-square w-full mb-3 overflow-hidden rounded-xl bg-gray-200">
+                                {#if crew.profile_path}
+                                    <img
+                                        src={`https://image.tmdb.org/t/p/w300${crew.profile_path}`}
+                                        alt={crew.name}
+                                        loading="lazy"
+                                        class="h-full w-full object-cover"
+                                    />
+                                {:else}
+                                    <div class="flex h-full w-full items-center justify-center text-dark/30">
+                                        <Icon icon="mdi:account" class="text-4xl" />
+                                    </div>
+                                {/if}
+                            </div>
+                            <h3 class="text-xs font-bold text-dark truncate" title={crew.name}>{crew.name}</h3>
+                            <p class="text-[11px] text-dark/60 truncate" title={crew.job}>{crew.job}</p>
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <div class="py-16 text-center text-dark/60">
+                    <Icon icon="mdi:account-hard-hat-outline" class="mx-auto text-5xl mb-2 opacity-40" />
+                    <p class="font-medium">No crew members cataloged for this movie.</p>
+                </div>
+            {/if}
+        {/if}
 
+        <!-- Reviews -->
+        {#if selectedTab === 'reviews'}
+            {#if movieReviews.length > 0}
+                <div class="space-y-4 max-w-4xl mx-auto" in:fade={{ duration: 250 }}>
+                    {#each movieReviews as review}
+                        <div class="rounded-2xl border border-secondary/15 bg-light p-6 shadow-sm">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-light font-bold text-sm">
+                                    {review.author?.[0]?.toUpperCase() || 'U'}
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-bold text-dark">{review.author}</h3>
+                                    <span class="text-[11px] text-dark/50">Verified TMDB Reviewer</span>
+                                </div>
+                            </div>
+                            <p class="text-xs sm:text-sm leading-relaxed text-dark/80 whitespace-pre-line line-clamp-6">
+                                {review.content}
+                            </p>
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <div class="py-16 text-center text-dark/60">
+                    <Icon icon="mdi:comment-remove-outline" class="mx-auto text-5xl mb-2 opacity-40" />
+                    <p class="font-medium">No user reviews written for this movie yet.</p>
+                </div>
+            {/if}
+        {/if}
+
+        <!-- Recommendations -->
+        {#if selectedTab === 'recommendations'}
+            {#if movieRecommendations.length > 0}
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6" in:fade={{ duration: 250 }}>
+                    {#each movieRecommendations as rec}
+                        <a
+                            href={`/movies/${rec.id}`}
+                            class="group flex flex-col overflow-hidden rounded-2xl border border-secondary/15 bg-light shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                        >
+                            <div class="relative aspect-[2/3] w-full overflow-hidden bg-gray-900">
+                                {#if rec.poster_path}
+                                    <img
+                                        src={`https://image.tmdb.org/t/p/w500${rec.poster_path}`}
+                                        alt={rec.title}
+                                        loading="lazy"
+                                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                {:else}
+                                    <div class="flex h-full w-full items-center justify-center text-light/40">
+                                        <Icon icon="mdi:filmstrip-off" class="text-3xl" />
+                                    </div>
+                                {/if}
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold text-dark truncate group-hover:text-primary transition-colors" title={rec.title}>
+                                    {rec.title}
+                                </h3>
+                                {#if rec.vote_average}
+                                    <div class="mt-1 flex items-center gap-1 text-[11px] text-dark/60">
+                                        <Icon icon="mdi:star" class="text-yellow-500 text-xs" />
+                                        <span>{rec.vote_average.toFixed(1)}</span>
+                                    </div>
+                                {/if}
+                            </div>
+                        </a>
+                    {/each}
+                </div>
+            {:else}
+                <div class="py-16 text-center text-dark/60">
+                    <Icon icon="mdi:movie-off-outline" class="mx-auto text-5xl mb-2 opacity-40" />
+                    <p class="font-medium">No recommendations available for this movie.</p>
+                </div>
+            {/if}
+        {/if}
+    </main>
+{/if}
 
 <FooterComponent />
