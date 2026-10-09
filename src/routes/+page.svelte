@@ -85,53 +85,6 @@
     </div>
 </section>
 
-<!-- Feature Highlights -->
-<section class="bg-gray-100 py-16">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-12 text-center" in:fly={{ y: 30, duration: 500 }}>
-            <h2 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                Explore Our Features
-            </h2>
-            <p class="mt-2 text-sm text-gray-600">Everything you need to discover and track cinema.</p>
-        </div>
-
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div
-                class="group rounded-2xl border border-gray-200/80 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                in:fly={{ y: 30, duration: 500 }}
-            >
-                <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-light">
-                    <Icon icon="mdi:movie-search-outline" class="text-2xl" />
-                </div>
-                <h3 class="mb-2 text-lg font-bold text-gray-900">Browse Movies</h3>
-                <p class="text-sm leading-relaxed text-gray-600">Find movies effortlessly by genre, user rating, or release date.</p>
-            </div>
-
-            <div
-                class="group rounded-2xl border border-gray-200/80 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                in:fly={{ y: 30, duration: 500, delay: 150 }}
-            >
-                <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-light">
-                    <Icon icon="mdi:bookmark-multiple-outline" class="text-2xl" />
-                </div>
-                <h3 class="mb-2 text-lg font-bold text-gray-900">Create Watchlists</h3>
-                <p class="text-sm leading-relaxed text-gray-600">Bookmark must-watch films and keep your backlog organized.</p>
-            </div>
-
-            <div
-                class="group rounded-2xl border border-gray-200/80 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                in:fly={{ y: 30, duration: 500, delay: 300 }}
-            >
-                <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-light">
-                    <Icon icon="mdi:thumb-up-outline" class="text-2xl" />
-                </div>
-                <h3 class="mb-2 text-lg font-bold text-gray-900">Get Recommendations</h3>
-                <p class="text-sm leading-relaxed text-gray-600">Receive smart suggestions tailored to your cinematic taste.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Trending Movies Section -->
 <section class="py-16">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
