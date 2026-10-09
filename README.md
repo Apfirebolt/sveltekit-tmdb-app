@@ -1,26 +1,26 @@
-# Svelte Kite Movies
+# Svelte Kite IMDB
 
 ![SvelteKit](https://img.shields.io/badge/SvelteKit-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 
-![Cover](./screenshots/1.png)
+![Cover](./screenshots/1.jpg)
 
 ## About the Project
 
-Svelte Kit Movies is a web application built with SvelteKit, TailwindCSS, and TypeScript. It allows users to search for movies and view detailed information about them. The project leverages modern web technologies to provide a fast, responsive, and user-friendly experience.
+Svelte Kit IMDB is a web application built with SvelteKit, TailwindCSS, and TypeScript. It allows users to search for movies, shows, celebrities and view detailed information about them. The project leverages modern web technologies to provide a fast, responsive, and user-friendly experience.
 
-For movies data it uses the following API which is also created by me https://softgenie.org/api/movies
+For data it uses the API provided by TMDB which is closest to free alternative we have for IMDB API.
 
 ## Screenshots
 
 Please find some of the screenshots of the application below.
 
-![Screenshot 1](./screenshots/1.png)
-![Screenshot 2](./screenshots/2.png)
-![Screenshot 3](./screenshots/3.png)
-![Screenshot 4](./screenshots/4.png)
-![Screenshot 5](./screenshots/5.png)
+![Screenshot 1](./screenshots/1.jpg)
+![Screenshot 2](./screenshots/2.jpg)
+![Screenshot 3](./screenshots/3.jpg)
+![Screenshot 4](./screenshots/4.jpg)
+![Screenshot 5](./screenshots/5.jpg)
 
 ## SSR - When to render on client and when on server?
 
